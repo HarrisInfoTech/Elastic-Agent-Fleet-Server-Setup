@@ -1,41 +1,28 @@
-# 🚀 Elastic Agent & Fleet Server Setup (Vultr • Ubuntu 22.04 • Windows Agent)
+# 🚀 Elastic Agent & Fleet Server Setup — Vultr (Ubuntu 22.04) + Windows Agent
 
-This guide documents how I set up **Elastic Fleet Server** on **Ubuntu 22.04 (Vultr)**, enrolled a **Windows Server 2022** endpoint with **Elastic Agent**, fixed Fleet URL/port issues, and verified logs in Kibana.
+This project documents how I deployed **Fleet Server** on **Ubuntu 22.04 (Vultr)**, enrolled a **Windows Server 2022** endpoint with **Elastic Agent**, fixed port/URL issues (`8220` vs `443`), and verified logs in **Kibana**.
 
-> ⚠️ Public repo note: I redact/blur real IPs/tokens in screenshots. Use placeholders like `203.0.113.25` (public) and `10.0.0.x` (private).
+> 🔐 **Public repo note:** I redact/blur real IPs/tokens. Use placeholders like `203.0.113.25` (public) and `10.0.0.x` (private).
 
 ---
 
-## 📌 Environment
-- **Cloud:** Vultr (with **VPC 2.0** selected for the Fleet server)
-- **Fleet Server Host:** Ubuntu 22.04
+## 📌 Project Overview
+- **Cloud:** Vultr (VPC 2.0 selected for Fleet Server)
 - **Stack UI:** Kibana (`http://<elastic-public-ip>:5601`)
-- **Endpoint:** Windows Server 2022 (already deployed)
-- **Access:** SSH (Linux), RDP (Windows)
+- **Fleet Server Host:** Ubuntu 22.04
+- **Endpoint:** Windows Server 2022 (pre-deployed)
+- **Goal:** Manage agents centrally with Fleet and confirm Windows logs in Kibana
 
 ---
 
-## 🧭 High-Level Flow
-1) Deploy Ubuntu VM on Vultr (with **VPC 2.0**; network selected; hostname set)  
-2) In Kibana: **Management → Fleet → Add Fleet Server (Quick Start)**  
-3) Generate Fleet Server command (use **https URL** with **public IP**)  
-4) SSH into Ubuntu and run the generated **Fleet Server** command  
-5) Adjust cloud + host firewalls (opened ranges during setup, then tightened)  
-6) Kibana: Continue the wizard, **create Agent policy**  
-7) Install **Elastic Agent** on Windows Server (PowerShell as Admin)  
-8) Fix enrollment issues: **Fleet URL must be `:8220`**, not `:443`; used `--insecure` for lab  
-9) Confirm Fleet Server **Online**, Agent **Enrolled**, Windows logs in **Discover**
+## 🧱 Lab Architecture
 
----
-
-## 🧱 Architecture (lab)
-
-| Component | Role | Ports (final) |
-|---|---|---|
-| Ubuntu 22.04 (Vultr) | Fleet Server | 8220/tcp (from trusted IPs) |
-| Windows Server 2022 | Elastic Agent | Outbound to Fleet Server 8220 |
-| Elasticsearch | Backend | 9200/tcp (internal) |
-| Kibana | UI | 5601/tcp (from my IP) |
+| Component               | Role              | Ports (final)                                       |
+|------------------------|-------------------|-----------------------------------------------------|
+| Ubuntu 22.04 (Vultr)   | Fleet Server      | **8220/tcp** (from trusted IPs), **22/tcp** (SSH)   |
+| Windows Server 2022    | Elastic Agent     | Outbound to Fleet Server **8220**                   |
+| Kibana                 | UI                | **5601/tcp** (from my IP)                           |
+| Elasticsearch          | Backend           | **9200/tcp** (internal; allowed during setup)       |
 
 📸 *Diagram placeholder*  
 ![Fleet Architecture](./screenshots/fleet-architecture.png)
@@ -43,23 +30,22 @@ This guide documents how I set up **Elastic Fleet Server** on **Ubuntu 22.04 (Vu
 ---
 
 ## ✅ Prerequisites
-- Kibana reachable at `http://<elastic-public-ip>:5601`
-- Elastic user with permissions (e.g., `elastic`)
-- 1x Ubuntu 22.04 VM (Fleet server), **VPC 2.0 selected**
-- 1x Windows Server 2022 (agent endpoint)
-- Your public IP to restrict firewall rules
+- Running **Elasticsearch + Kibana** (from prior repo)
+- Kibana reachable at: `http://<elastic-public-ip>:5601`
+- Credentials with enough privileges (e.g., `elastic`)
+- 1× Vultr Ubuntu 22.04 VM (Fleet Server) with **VPC 2.0**
+- 1× Windows Server 2022 VM (Elastic Agent target)
+- Your **public IP** (to restrict firewall rules)
 
 ---
 
-## 🚀 Steps (what I actually did)
+## 🛠️ Steps (What I Actually Did)
 
-### **Step 1 — Deploy Fleet Server VM on Vultr**
-- **Deploy new server**
-- **Type:** Cloud Compute CPU
+### **Step 1 — Deploy Fleet Server VM (Vultr)**
+- Deployed new server: **Cloud Compute (CPU)**
 - **Image:** Ubuntu 22.04
 - **Networking:** Selected **VPC 2.0** (ensure network is checked)
-- **Hostname:** Set a label/hostname
-- Click **Deploy**
+- **Hostname/Label:** Set and deployed
 
 📸 *Screenshots:*  
 ![Deploy Ubuntu](./screenshots/vultr-deploy-ubuntu.png)  
@@ -68,19 +54,19 @@ This guide documents how I set up **Elastic Fleet Server** on **Ubuntu 22.04 (Vu
 
 ---
 
-### **Step 2 — Open Kibana and Start Fleet Quick Start**
-- Go to Kibana:  
+### **Step 2 — Start Fleet Quick Start in Kibana**
+- Open Kibana:
 http://<elastic-public-ip>:5601
 
 markdown
 Copy
 Edit
 - **Management → Fleet → Add Fleet Server**
-- Choose **Quick start**
-- Enter:
-- **Name**: e.g., `fleet-server-01`
+- Chose **Quick start**
+- Entered:
+- **Name**: `fleet-server-01`
 - **URL**: `https://<fleet-server-public-ip>` (**must be https**)
-- Click **Generate** to get the install command
+- Clicked **Generate** to get the Linux install command
 
 📸 *Screenshots:*  
 ![Add Fleet Server (Quick Start)](./screenshots/kibana-fleet-add-server.png)  
@@ -88,79 +74,77 @@ Edit
 
 ---
 
-### **Step 3 — SSH to Ubuntu & Update**
+### **Step 3 — SSH to Fleet Server & Update**
 ```bash
 ssh root@<fleet-server-public-ip>
 
-# Update repos & packages
+# Update repository & packages
 apt-get update && apt-get upgrade -y
 📸 Screenshots:
 
 
-Step 4 — Install Fleet Server (Use Command From Kibana)
-From Kibana’s “Install Fleet Server on a centralized host” (Step 2), copy the Linux command and run it here.
+Step 4 — Install Fleet Server (Paste Command From Kibana)
+From Kibana’s “Install Fleet Server to a centralized host (Step 2)”, I copied the generated command and ran it on the Ubuntu VM.
 
 bash
 Copy
 Edit
-# Example placeholder — use YOUR exact command from Kibana
-# (It includes ES URL, service token, CA fingerprint/flags)
+# Example placeholder — use the EXACT command from Kibana
 sudo ./elastic-agent install \
   --fleet-server-es=https://<elasticsearch-host>:9200 \
   --fleet-server-service-token=<SERVICE_TOKEN> \
-  --fleet-server-policy=<FLEET_SERVER_POLICY> \
+  --fleet-server-policy=<FLEET_SERVER_POLICY_ID_OR_NAME> \
   --url=https://<fleet-server-public-ip>:8220
-# In my lab I later used --insecure until certs were sorted
+# In this lab I later used --insecure until certs were sorted
 📸 Screenshot:
 
-Step 5 — Cloud & Host Firewall Adjustments
-During setup I opened broader ranges, then tightened later:
+Step 5 — Firewall Adjustments (Cloud + Host)
+During setup I opened broader ranges, then tightened later.
 
 Vultr firewall (cloud):
 
-Temporary: TCP 1–65535 from my public IP (to unblock the flow)
+Temporary: allowed TCP 1–65535 from my public IP (to get enrollment working)
 
-Final (recommended): only 8220/tcp (Fleet), 22/tcp (SSH), and what you truly need — from my IP only
+Final (recommended): allow 22/tcp (SSH) and 8220/tcp (Fleet) from my IP only
 
 📸 Screenshots:
 
 
-UFW on ELK / Stack host (to allow Kibana/ES as needed):
+UFW on ELK host (to allow stack ports during setup):
 
 bash
 Copy
 Edit
-# On the Elasticsearch/Kibana VM
-sudo ufw allow 9200/tcp        # (I allowed this during setup)
-sudo ufw allow 5601/tcp        # if you need Kibana externally (from your IP)
+sudo ufw allow 9200/tcp     # Elasticsearch API (allowed during setup)
+sudo ufw allow 5601/tcp     # Kibana UI if needed from my IP
 sudo ufw status
-UFW on Fleet server host (after install):
+UFW on Fleet Server host:
 
 bash
 Copy
 Edit
-sudo ufw allow 8220/tcp        # Fleet server port
-sudo ufw allow 443/tcp         # (added during troubleshooting; see Step 8)
+sudo ufw allow 8220/tcp     # Fleet Server
+sudo ufw allow 443/tcp      # Added during troubleshooting
 sudo ufw status
 📸 Screenshot:
 
-🔐 Best practice: Keep both layers (Vultr + UFW) restricted to your IP. Do not leave broad port ranges open.
+🔐 Best practice: keep both layers (Vultr + UFW) restricted to your IP; don’t leave broad ranges open.
 
-Step 6 — Continue in Kibana & Create Agent Policy
-Back in Kibana, click Continue after Fleet Server install
+Step 6 — Continue Wizard & Create Agent Policy
+In Kibana, clicked Continue
 
-Create Policy → name it (e.g., Windows-Endpoint-Policy)
+Created a new Agent Policy (e.g., Windows-Endpoint-Policy)
 
-Add integrations you want (e.g., Windows, System)
+Saved policy (can add Windows + System integrations later)
 
-📸 Screenshots:
+📸 Screenshot:
 
-Step 7 — Install Elastic Agent on Windows Server
-Log in to your Windows Server
+Step 7 — Install Elastic Agent on Windows
+Logged into the Windows Server 2022 machine
 
-Open PowerShell (Run as Administrator)
+Opened PowerShell (Run as Administrator)
 
-From Kibana → Fleet → Add agent, copy the Windows command and paste it:
+From Kibana → Fleet → Add agent, copied the Windows install command and pasted it:
 
 powershell
 Copy
@@ -170,28 +154,26 @@ Edit
   --url=https://<fleet-server-public-ip>:8220 `
   --enrollment-token=<AGENT_ENROLLMENT_TOKEN> `
   --insecure
-I used --insecure to bypass unsigned cert errors in this lab
+Used --insecure to bypass self-signed cert errors in this lab
 
 📸 Screenshots:
 
 
 Step 8 — Fix Fleet URL Port (8220 vs 443)
-Troubleshooting I hit:
+In Kibana → Fleet → Settings, I edited the Fleet Server host URL to include :8220 (not :443)
 
-In Kibana → Fleet → Settings, I had to edit the Fleet Server host URL to include :8220 (not :443)
+Also modified the agent install URL to use :8220
 
-I also modified the install URL from :443 to :8220 so agents connect properly
-
-Kept --insecure during lab while certs weren’t in place
+Kept --insecure during lab while certs were not in place
 
 📸 Screenshots:
 
 
-Step 9 — Verify Enrollment & Data
-Kibana → Fleet → Fleet servers: Fleet shows Healthy/Online
+Step 9 — Verify Enrollment & Logs
+Fleet → Fleet servers: shows Healthy/Online
 
-Kibana → Fleet → Agents: Windows agent Online
+Fleet → Agents: Windows agent Online
 
-Kibana → Discover: Windows logs appearing (e.g., logs-windows.*, metrics-system.*)
+Discover: Windows logs arriving (e.g., logs-windows.*, metrics-system.*)
 
 📸 Screenshots:
