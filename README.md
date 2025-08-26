@@ -25,7 +25,7 @@ This project documents how I deployed **Fleet Server** on **Ubuntu 22.04 (Vultr)
 | Elasticsearch          | Backend           | **9200/tcp** (internal; allowed during setup)       |
 
 📸 *Diagram placeholder*  
-![Fleet Architecture](./screenshots/fleet-architecture.png)
+![Lab Architecture](./screenshots/lab-architecture.png)
 
 ---
 
@@ -49,8 +49,7 @@ This project documents how I deployed **Fleet Server** on **Ubuntu 22.04 (Vultr)
 
 📸 *Screenshots:*  
 ![Deploy Ubuntu](./screenshots/vultr-deploy-ubuntu.png)  
-![Select VPC 2.0 / Network](./screenshots/vultr-select-network.png)  
-![Hostname Set](./screenshots/vultr-hostname.png)
+
 
 ---
 
@@ -58,9 +57,6 @@ This project documents how I deployed **Fleet Server** on **Ubuntu 22.04 (Vultr)
 - Open Kibana:
 http://<elastic-public-ip>:5601
 
-markdown
-Copy
-Edit
 - **Management → Fleet → Add Fleet Server**
 - Chose **Quick start**
 - Entered:
@@ -82,9 +78,6 @@ ssh root@<fleet-server-public-ip>
 apt-get update && apt-get upgrade -y
 ```
 
-📸 Screenshots:
-
-
 Step 4 — Install Fleet Server (Paste Command From Kibana)
 From Kibana’s “Install Fleet Server to a centralized host (Step 2)”, I copied the generated command and ran it on the Ubuntu VM.
 
@@ -101,6 +94,7 @@ sudo ./elastic-agent install \
 ```
 
 📸 Screenshot:
+![Installation of fleet server](./screenshots/Install-fleet-server.png)
 
 Step 5 — Firewall Adjustments (Cloud + Host)
 
