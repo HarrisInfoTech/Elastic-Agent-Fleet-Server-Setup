@@ -80,13 +80,15 @@ ssh root@<fleet-server-public-ip>
 
 # Update repository & packages
 apt-get update && apt-get upgrade -y
+```
+
 📸 Screenshots:
 
 
 Step 4 — Install Fleet Server (Paste Command From Kibana)
 From Kibana’s “Install Fleet Server to a centralized host (Step 2)”, I copied the generated command and ran it on the Ubuntu VM.
 
-bash
+```bash
 Copy
 Edit
 # Example placeholder — use the EXACT command from Kibana
@@ -96,17 +98,20 @@ sudo ./elastic-agent install \
   --fleet-server-policy=<FLEET_SERVER_POLICY_ID_OR_NAME> \
   --url=https://<fleet-server-public-ip>:8220
 # In this lab I later used --insecure until certs were sorted
+```
+
 📸 Screenshot:
 
 Step 5 — Firewall Adjustments (Cloud + Host)
+```bash
 During setup I opened broader ranges, then tightened later.
-
+```
 Vultr firewall (cloud):
 
 Temporary: allowed TCP 1–65535 from my public IP (to get enrollment working)
 
 Final (recommended): allow 22/tcp (SSH) and 8220/tcp (Fleet) from my IP only
-
+```
 📸 Screenshots:
 
 
