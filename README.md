@@ -103,34 +103,38 @@ sudo ./elastic-agent install \
 📸 Screenshot:
 
 Step 5 — Firewall Adjustments (Cloud + Host)
-```bash
+
 During setup I opened broader ranges, then tightened later.
-```
+
 Vultr firewall (cloud):
 
 Temporary: allowed TCP 1–65535 from my public IP (to get enrollment working)
 
 Final (recommended): allow 22/tcp (SSH) and 8220/tcp (Fleet) from my IP only
-```
+
 📸 Screenshots:
 
 
 UFW on ELK host (to allow stack ports during setup):
+```bash
 
-bash
 Copy
 Edit
 sudo ufw allow 9200/tcp     # Elasticsearch API (allowed during setup)
 sudo ufw allow 5601/tcp     # Kibana UI if needed from my IP
 sudo ufw status
+```
 UFW on Fleet Server host:
 
-bash
+```bash
+
 Copy
 Edit
 sudo ufw allow 8220/tcp     # Fleet Server
 sudo ufw allow 443/tcp      # Added during troubleshooting
 sudo ufw status
+```
+
 📸 Screenshot:
 
 🔐 Best practice: keep both layers (Vultr + UFW) restricted to your IP; don’t leave broad ranges open.
@@ -150,7 +154,7 @@ Logged into the Windows Server 2022 machine
 Opened PowerShell (Run as Administrator)
 
 From Kibana → Fleet → Add agent, copied the Windows install command and pasted it:
-
+```bash
 powershell
 Copy
 Edit
@@ -159,6 +163,7 @@ Edit
   --url=https://<fleet-server-public-ip>:8220 `
   --enrollment-token=<AGENT_ENROLLMENT_TOKEN> `
   --insecure
+```
 Used --insecure to bypass self-signed cert errors in this lab
 
 📸 Screenshots:
