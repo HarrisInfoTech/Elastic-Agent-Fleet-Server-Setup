@@ -118,6 +118,7 @@ ufw allow 9200/tcp     # Elasticsearch API (allowed during setup)
 
 
 📸 Screenshot:
+
 ![UFW](./screenshots/UFW.png)
 
 🔐 Best practice: keep both layers (Vultr + UFW) restricted to your IP; don’t leave broad ranges open.
@@ -130,6 +131,7 @@ Created a new Agent Policy (e.g., Windows-Endpoint-Policy)
 Saved policy (can add Windows + System integrations later)
 
 📸 Screenshot:
+
 ![Add agent](./screenshots/Add-agent.png)
 
 Step 7 — Install Elastic Agent on Windows
@@ -151,7 +153,8 @@ Edit
 Used --insecure to bypass self-signed cert errors in this lab
 
 📸 Screenshots:
-![Installation of fleet server](./screenshots/Install-fleet-server.png)
+
+![Insecure](./screenshots/insecure.png)
 
 Step 8 — Fix Fleet URL Port (8220 vs 443)
 In Kibana → Fleet → Settings, I edited the Fleet Server host URL to include :8220 (not :443)
@@ -172,4 +175,6 @@ Fleet → Agents: Windows agent Online
 Discover: Windows logs arriving (e.g., logs-windows.*, metrics-system.*)
 
 📸 Screenshots:
+
+![Healthy Agent](./screenshots/Healthy-Agents.png)
 
