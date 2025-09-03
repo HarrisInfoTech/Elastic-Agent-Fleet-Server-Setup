@@ -161,7 +161,8 @@ Also modified the agent install URL to use :8220
 Kept --insecure during lab while certs were not in place
 
 📸 Screenshots:
-![Installation of fleet server](./screenshots/Install-fleet-server.png)
+
+![Fixed fleet](./screenshots/Install-fleet-server.png)
 
 Step 9 — Verify Enrollment & Logs
 Fleet → Fleet servers: shows Healthy/Online
@@ -171,4 +172,4 @@ Fleet → Agents: Windows agent Online
 Discover: Windows logs arriving (e.g., logs-windows.*, metrics-system.*)
 
 📸 Screenshots:
-![Installation of fleet server](./screenshots/Install-fleet-server.png)
+![Installation of fleet server](./screenshots/fixedfleetr.png)
