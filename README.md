@@ -130,7 +130,7 @@ Created a new Agent Policy (e.g., Windows-Endpoint-Policy)
 Saved policy (can add Windows + System integrations later)
 
 📸 Screenshot:
-![Add Agent](./screenshots/Add-agent.png
+![Add agent](./screenshots/Add-agent.png)
 
 Step 7 — Install Elastic Agent on Windows
 Logged into the Windows Server 2022 machine
@@ -162,7 +162,7 @@ Kept --insecure during lab while certs were not in place
 
 📸 Screenshots:
 
-![Fixed fleet](./screenshots/Install-fleet-server.png)
+![Installation of fleet server](./screenshots/fixedfleet.png)
 
 Step 9 — Verify Enrollment & Logs
 Fleet → Fleet servers: shows Healthy/Online
@@ -172,4 +172,4 @@ Fleet → Agents: Windows agent Online
 Discover: Windows logs arriving (e.g., logs-windows.*, metrics-system.*)
 
 📸 Screenshots:
-![Installation of fleet server](./screenshots/fixedfleet.png)
+
