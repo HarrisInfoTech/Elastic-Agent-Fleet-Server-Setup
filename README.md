@@ -107,7 +107,7 @@ Temporary: allowed TCP 1–65535 from my public IP (to get enrollment working)
 Final (recommended): allow 22/tcp (SSH) and 8220/tcp (Fleet) from my IP only
 
 📸 Screenshots:
-
+![Firewall Adjustments](./screenshots/Firewall-adjustments.png)
 
 UFW on ELK host (to allow stack ports during setup):
 ```bash
@@ -130,6 +130,7 @@ sudo ufw status
 ```
 
 📸 Screenshot:
+![Installation of fleet server](./screenshots/Install-fleet-server.png)
 
 🔐 Best practice: keep both layers (Vultr + UFW) restricted to your IP; don’t leave broad ranges open.
 
@@ -141,6 +142,7 @@ Created a new Agent Policy (e.g., Windows-Endpoint-Policy)
 Saved policy (can add Windows + System integrations later)
 
 📸 Screenshot:
+![Add Agent](./screenshots/Add-agent.png
 
 Step 7 — Install Elastic Agent on Windows
 Logged into the Windows Server 2022 machine
@@ -161,7 +163,7 @@ Edit
 Used --insecure to bypass self-signed cert errors in this lab
 
 📸 Screenshots:
-
+![Installation of fleet server](./screenshots/Install-fleet-server.png)
 
 Step 8 — Fix Fleet URL Port (8220 vs 443)
 In Kibana → Fleet → Settings, I edited the Fleet Server host URL to include :8220 (not :443)
@@ -171,7 +173,7 @@ Also modified the agent install URL to use :8220
 Kept --insecure during lab while certs were not in place
 
 📸 Screenshots:
-
+![Installation of fleet server](./screenshots/Install-fleet-server.png)
 
 Step 9 — Verify Enrollment & Logs
 Fleet → Fleet servers: shows Healthy/Online
@@ -181,3 +183,4 @@ Fleet → Agents: Windows agent Online
 Discover: Windows logs arriving (e.g., logs-windows.*, metrics-system.*)
 
 📸 Screenshots:
+![Installation of fleet server](./screenshots/Install-fleet-server.png)
