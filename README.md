@@ -172,4 +172,4 @@ Fleet → Agents: Windows agent Online
 Discover: Windows logs arriving (e.g., logs-windows.*, metrics-system.*)
 
 📸 Screenshots:
-![Installation of fleet server](./screenshots/fixedfleetr.png)
+![Installation of fleet server](./screenshots/fixedfleet.png)
