@@ -112,25 +112,13 @@ Final (recommended): allow 22/tcp (SSH) and 8220/tcp (Fleet) from my IP only
 UFW on ELK host (to allow stack ports during setup):
 ```bash
 
-Copy
-Edit
-sudo ufw allow 9200/tcp     # Elasticsearch API (allowed during setup)
-sudo ufw allow 5601/tcp     # Kibana UI if needed from my IP
-sudo ufw status
-```
-UFW on Fleet Server host:
+ufw allow 9200/tcp     # Elasticsearch API (allowed during setup)
 
-```bash
-
-Copy
-Edit
-sudo ufw allow 8220/tcp     # Fleet Server
-sudo ufw allow 443/tcp      # Added during troubleshooting
-sudo ufw status
 ```
+
 
 📸 Screenshot:
-![Installation of fleet server](./screenshots/Install-fleet-server.png)
+![UFW](./screenshots/UFW.png)
 
 🔐 Best practice: keep both layers (Vultr + UFW) restricted to your IP; don’t leave broad ranges open.
 
